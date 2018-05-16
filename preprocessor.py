@@ -39,17 +39,14 @@ def call(fn, *args):
     return "{}({})".format(fn, repr(clist(args))[1:-1])
 
 def import_macros(code):
-    files = re.findall('#pymacros "(.*)"', code)
+    files = re.findall('#pragma pymacros "(.*)"', code)
 
     for filename in files:
         with open(filename) as f:
             exec(compile(f.read(), filename, "exec"), globals())
 
-    code = re.sub("^#(pymacros )","// \\1", code)
-    return code
-
 def apply_macros(code, filename):
-    code = import_macros(code)
+    import_macros(code)
     chunks = re.findall("[a-zA-Z0-9_]+!\(.+\)", code)
 
     for chunk in chunks:
@@ -59,8 +56,8 @@ def apply_macros(code, filename):
 
     return code
 
-filename = sys.argv[1]
-with open(filename) as f:
-    code = f.read()
-
-print(apply_macros(code, filename))
+if __name__ == "__main__":
+    filename = sys.argv[1]
+    with open(filename) as f:
+        code = f.read()
+    print(apply_macros(code, filename))

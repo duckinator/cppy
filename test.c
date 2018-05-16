@@ -1,4 +1,4 @@
-#pymacros "macros.py"
+#pragma pymacros "macros.py"
 #include <stdio.h>
 
 int main() {
