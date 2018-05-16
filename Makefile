@@ -7,7 +7,7 @@ test: test.o
 	./preprocessor.py $< | clang -std=c11 -x c -c -o $@ -
 
 clean:
-	rm test
+	rm -f test
 	rm -f *.o
 	rm -f *.cppy
 
