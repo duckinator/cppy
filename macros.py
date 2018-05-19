@@ -1,3 +1,5 @@
+from preprocessor import *
+
 def array_literal(*values):
     return clist(values)
 
