@@ -1,23 +1,37 @@
 #!/usr/bin/env python3
 
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
+from typing import Any, Sequence
 
 class char(str):
-    pass
+    def __init__(self, value):
+        super().__init__(value)
 
-def cstr(value):
+        if len(self) != 1:
+            raise ValueError(f"char instance with multiple character: '{value}'")
+
+def cstr(value: str):
+    if not isinstance(value, str):
+        raise TypeError(f"Given a value of type '{type(value)}', expected str.")
+
     return json.dumps(value)
 
-def cchar(value):
-    return "'{}'".format(value[0])
+def cchar(value: char):
+    if not isinstance(value, str):
+        # Allowing 'str' on purpose, so literrals are accepted
+        raise TypeError(f"Given a value of type '{type(value)}, expected char.'")
+    if len(value) != 1:
+        raise ValueError(f"Expected a single character, got '{value}'.")
 
-def cbool(value):
-    return str(value).lower()
+    return "'{}'".format(value)
 
-def clist(value):
+def cbool(value: bool):
+    return str(bool(value)).lower()
+
+def clist(value: Sequence[Any]):
     return "{" + ", ".join(map(repr, value)) + "}"
 
 crepr_functions = {
@@ -32,11 +46,14 @@ crepr_functions = {
 }
 
 def crepr(val):
-    fn = crepr_functions[type(val)]
+    try:
+        fn = crepr_functions[type(val)]
+    except KeyError:
+        raise TypeError(f"'{type(val)}' isn't a supported crepr type.")
 
     return repr(fn(val))
 
-def call(fn, *args):
+def call(fn: str, *args):
     return "{}({})".format(fn, repr(clist(args))[1:-1])
 
 def import_macros(code):
