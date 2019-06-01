@@ -7,13 +7,26 @@ from pathlib import Path
 from typing import Any, Sequence
 
 class char(str):
-    pass
+    def __init__(self, value):
+        super().__init__(value)
+
+        if len(self) != 1:
+            raise ValueError(f"char instance with multiple character: '{value}'")
 
 def cstr(value: str):
+    if not isinstance(value, str):
+        raise TypeError(f"Given a value of type '{type(value)}', expected str.")
+
     return json.dumps(value)
 
 def cchar(value: char):
-    return "'{}'".format(value[0])
+    if not isinstance(value, str):
+        # Allowing 'str' on purpose, so literrals are accepted
+        raise TypeError(f"Given a value of type '{type(value)}, expected char.'")
+    if len(value) != 1:
+        raise ValueError(f"Expected a single character, got '{value}'.")
+
+    return "'{}'".format(value)
 
 def cbool(value: bool):
     return str(bool(value)).lower()
@@ -33,7 +46,10 @@ crepr_functions = {
 }
 
 def crepr(val):
-    fn = crepr_functions[type(val)]
+    try:
+        fn = crepr_functions[type(val)]
+    except KeyError:
+        raise TypeError(f"'{type(val)}' isn't a supported crepr type.")
 
     return repr(fn(val))
 
