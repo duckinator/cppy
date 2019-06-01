@@ -16,7 +16,7 @@ def cchar(value: char):
     return "'{}'".format(value[0])
 
 def cbool(value: bool):
-    return str(value).lower()
+    return str(bool(value)).lower()
 
 def clist(value: Sequence[Any]):
     return "{" + ", ".join(map(repr, value)) + "}"
