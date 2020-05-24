@@ -1,14 +1,9 @@
 all: test
 
-test: test.o
+test: test.c
 	clang $< -o $@
-
-%.o: %.c
-	./preprocessor.py $< | clang -std=c11 -x c -c -o $@ -
 
 clean:
 	rm -f test
-	rm -f *.o
-	rm -f *.cppy
 
 .PHONY: clean
